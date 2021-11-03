@@ -31,9 +31,9 @@ jobs:
         - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
           uses: azure/login@v1.4.0
           with:
-            client-id: ${{ secrets.AZURE_CLIENTID }}
-            tenant-id: ${{ secrets.AZURE_TENANTID }}
-            subscription-id: ${{ secrets.AZURE_SUBSCRIPTIONID }} 
+            client-id: "6da1b369-891e-4d40-9194-6109bdd2bbba"
+            tenant-id: "d97eaa8d-4ae0-4248-b68c-e3a644ba0d94"
+            subscription-id: "0b2b0059-0ee3-4952-9c91-8cffd0d64c47"
             enable-AzPSSession: true
             
         - name: 'Get RG with powershell action'
