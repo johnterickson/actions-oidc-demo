@@ -35,6 +35,7 @@ jobs:
             tenant-id: "d97eaa8d-4ae0-4248-b68c-e3a644ba0d94"
             subscription-id: "0b2b0059-0ee3-4952-9c91-8cffd0d64c47"
             enable-AzPSSession: true
+            ACTIONS_STEP_DEBUG: true
             
         - name: 'Get RG with powershell action'
           uses: azure/powershell@v1
