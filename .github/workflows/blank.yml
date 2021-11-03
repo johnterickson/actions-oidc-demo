@@ -35,3 +35,10 @@ jobs:
             tenant-id: ${{ secrets.AZURE_TENANTID }}
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTIONID }} 
             enable-AzPSSession: true
+            
+        - name: 'Get RG with powershell action'
+          uses: azure/powershell@v1
+          with:
+             inlineScript: |
+               Get-AzResourceGroup
+             azPSVersion: "latest"
