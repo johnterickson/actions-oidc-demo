@@ -31,9 +31,12 @@ jobs:
         - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
           uses: azure/login@v1.4.0
           with:
-            client-id: "6da1b369-891e-4d40-9194-6109bdd2bbba"
-            tenant-id: "d97eaa8d-4ae0-4248-b68c-e3a644ba0d94"
-            subscription-id: "0b2b0059-0ee3-4952-9c91-8cffd0d64c47"
+            # oidc-demo app
+            client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62"
+            # johntericksonlive.onmicrosoft.com
+            tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8"
+            # Visual Studio Enterprise Subscription
+            subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939"
             enable-AzPSSession: true
             
         - name: 'Get RG with powershell action'
