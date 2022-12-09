@@ -31,10 +31,10 @@ jobs:
         - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
           uses: azure/login@v1.4.0
           with:
-            # actions-oidc-demo
-            client-id: "2012d583-2d57-476b-ac48-98e74850ef6f"
-            # jteaad.onmicrosoft.com
-            tenant-id: "dbb2ed3a-a7a9-4ab3-93f1-6ddca481f10c"
+            # oidc-demo
+            client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62"
+            # johntericksonlive.onmicrosoft.com
+            tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8"
             # Visual Studio Enterprise Subscription
             subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939"
             enable-AzPSSession: true
