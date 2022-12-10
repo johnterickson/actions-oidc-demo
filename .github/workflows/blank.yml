@@ -8,28 +8,8 @@ jobs:
   Windows-latest:
       runs-on: windows-latest
       steps:
-
-        - name: Install CLI-beta
-          run: |
-              cd ../..
-              $CWD = Convert-Path .
-              echo $CWD
-              python --version
-              python -m venv oidc-venv
-              . .\oidc-venv\Scripts\Activate.ps1
-              python -m pip install -q --upgrade pip
-              echo "started installing cli beta" 
-              pip install -q --extra-index-url https://azcliprod.blob.core.windows.net/beta/simple/ azure-cli
-              echo "installed cli beta" 
-              echo "$CWD\oidc-venv\Scripts" >> $env:GITHUB_PATH
-
-        - name: Installing Az.accounts for powershell
-          shell: pwsh
-          run: |
-               Install-Module -Name Az.Accounts -Force -AllowClobber -Repository PSGallery
-  
         - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-          uses: azure/login@v1.4.0
+          uses: azure/login@v1
           with:
             # oidc-demo
             client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62"
@@ -38,8 +18,8 @@ jobs:
             # Visual Studio Enterprise Subscription
             subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939"
             enable-AzPSSession: true
-            
-        - name: 'Get RG with powershell action'
+
+        - name: 'Get resource group with PowerShell action'
           uses: azure/powershell@v1
           with:
              inlineScript: |
