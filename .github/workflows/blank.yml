@@ -22,6 +22,12 @@ jobs:
         - name: 'Get resource group with PowerShell action'
           uses: azure/powershell@v1
           with:
+             azPSVersion: "latest"
              inlineScript: |
                Get-AzResourceGroup
-             azPSVersion: "latest"
+             
+        - name: 'Run Azure CLI commands'
+          run: |
+            az account show
+            az group list
+            pwd 
