@@ -2,8 +2,8 @@ name: Run Azure Login with OpenID Connect
 on: [push]
 
 permissions:
-      id-token: write
-      
+  id-token: write
+
 env:
   # oidc-demo
   client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62"
@@ -11,8 +11,8 @@ env:
   tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8"
   # Visual Studio Enterprise Subscription
   subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939"
-      
-jobs: 
+
+jobs:
   windows-latest:
     runs-on: windows-latest
     steps:
@@ -24,23 +24,23 @@ jobs:
           subscription-id: ${{ env.subscription-id }}
           enable-AzPSSession: true
 
-      - name: 'Get resource group with PowerShell action'
+      - name: "Get resource group with PowerShell action"
         uses: azure/powershell@v1
         with:
-           azPSVersion: "latest"
-           inlineScript: |
-             Get-AzResourceGroup
+          azPSVersion: "latest"
+          inlineScript: |
+            Get-AzResourceGroup
   ubuntu-latest:
     runs-on: ubuntu-latest
     steps:
-    - name: 'Az CLI login'
-      uses: azure/login@v1
-      with:
-        client-id: ${{ env.client-id }}
-        tenant-id: ${{ env.tenant-id }}
-        subscription-id: ${{ env.subscription-id }}
-    - name: 'Run Azure CLI commands'
-      run: |
-            az account show
-            az group list
-            az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | wc
+      - name: "Az CLI login"
+        uses: azure/login@v1
+        with:
+          client-id: ${{ env.client-id }}
+          tenant-id: ${{ env.tenant-id }}
+          subscription-id: ${{ env.subscription-id }}
+      - name: "Run Azure CLI commands"
+        run: |
+          az account show
+          az group list
+          az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798
