@@ -45,4 +45,5 @@ jobs:
           az group list
           export TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
           echo $TOKEN | wc
-          curl -v -u "pat:$TOKEN" https://dev.azure.com/johnterickson/PrivateRepros
+          export BASE64_TOKEN=$(echo $TOKEN | base64 --wrap=0)
+          curl -v - "Authorization: Bearer $BASE64_TOKEN" https://dev.azure.com/johnterickson/PrivateRepros
