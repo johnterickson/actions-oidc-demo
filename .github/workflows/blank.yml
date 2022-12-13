@@ -11,20 +11,21 @@ env:
   tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8"
   # Visual Studio Enterprise Subscription
   subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939"
+  ARTIFACTS_FEED: https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
 
 jobs:
-  windows-latest:
-    runs-on: windows-latest
-    steps:
-      - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-        uses: azure/login@v1
-        with:
-          client-id: ${{ env.client-id }}
-          tenant-id: ${{ env.tenant-id }}
-          subscription-id: ${{ env.subscription-id }}
-          enable-AzPSSession: true
+  # windows-latest:
+  #   runs-on: windows-latest
+  #   steps:
+  #     - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
+  #       uses: azure/login@v1
+  #       with:
+  #         client-id: ${{ env.client-id }}
+  #         tenant-id: ${{ env.tenant-id }}
+  #         subscription-id: ${{ env.subscription-id }}
+  #         enable-AzPSSession: true
 
-      - name: "Get resource group with PowerShell action"
+  #     - name: "Get resource group with PowerShell action"
         uses: azure/powershell@v1
         with:
           azPSVersion: "latest"
@@ -39,10 +40,13 @@ jobs:
           client-id: ${{ env.client-id }}
           tenant-id: ${{ env.tenant-id }}
           subscription-id: ${{ env.subscription-id }}
+      - name: "install cred provider and config auth"
+        run: |
+          sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
+          export TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+          # https://github.com/microsoft/artifacts-credprovider#environment-variables
+          echo "VSS_NUGET_EXTERNAL_FEED_ENDPOINTS={\"endpointCredentials\":[{\"endpoint\":\"$ARTIFACTS_FEED\",\"username\":\"user\",\"password\":\"$TOKEN\"}]}" >> $GITHUB_ENV
       - name: "Run Azure CLI commands"
         run: |
-          az account show
-          az group list
-          export TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
-          export AZDO_ORG=johnterickson
-          curl -v -H "Authorization: Bearer $TOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
+          dotnet restore -v diag
+
