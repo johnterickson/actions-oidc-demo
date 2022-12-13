@@ -45,4 +45,4 @@ jobs:
           az group list
           export TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
           export AZDO_ORG=johnterickson
-          curl -v -H "Authorization: Bearer $TOKEN" https://dev.azure.com/$AZDO_ORG/_apis/projects?api-version=7.0
+          curl -v -H "Authorization: Bearer $TOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
