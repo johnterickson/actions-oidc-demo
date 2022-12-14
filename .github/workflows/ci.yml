@@ -14,7 +14,7 @@ jobs:
       - name: "Az CLI login"
         uses: azure/login@v1
         with:
-          client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62" # 'oidc-demo'
+          client-id: "0219b319-b051-4079-b778-933db7596e59" # 'johnterickson--actions-oidc-demo--main--ReadPackages'
           tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8" # 'johntericksonlive.onmicrosoft.com'
           subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939" # Visual Studio Enterprise Subscription
       - name: "confirm azure connection"
@@ -22,7 +22,8 @@ jobs:
       - name: "configure auth"
         run: echo "VSS_NUGET_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
       - name: "curl feed root json"
-        run: curl -v -u "user:$VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
+        run: |
+          curl -v -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
       # this won't work until AzDO supports MSI AAD tokens over basic auth in Jan          
       # - name: "dotnet restore"
       #   run: |
