@@ -43,13 +43,16 @@ jobs:
       - name: "install cred provider and config auth"
         run: |
           sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
-          export TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+          export ARTIFACTS_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+          echo "ARTIFACTS_TOKEN=$ARTIFACTS_TOKEN" >> $GITHUB_ENV
           # https://github.com/microsoft/artifacts-credprovider#environment-variables
           echo "VSS_NUGET_EXTERNAL_FEED_ENDPOINTS={\"endpointCredentials\":[{\"endpoint\":\"$ARTIFACTS_FEED\",\"username\":\"user\",\"password\":\"$TOKEN\"}]}" >> $GITHUB_ENV
       - uses: actions/checkout@v3
-      - name: "Run Azure CLI commands"
-        run: |
-          pwd
-          ls
-          dotnet restore -v diag
+      - name: "curl $ARTIFACTS_FEED"
+        run: curl -u "user:$ARTIFACTS_TOKEN" $ARTIFACTS_FEED
+      # this won't work until AzDO supports MSI AAD tokens over basic auth in Jan          
+      # - name: "dotnet restore"
+      #   run: |
+      #     curl -u "user:$ARTIFACTS_TOKEN" $ARTIFACTS_FEED
+      #     # dotnet restore -v diag
 
