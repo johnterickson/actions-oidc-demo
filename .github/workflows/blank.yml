@@ -4,55 +4,25 @@ on: [push]
 permissions:
   id-token: write
 
-env:
-  # oidc-demo
-  client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62"
-  # johntericksonlive.onmicrosoft.com
-  tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8"
-  # Visual Studio Enterprise Subscription
-  subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939"
-  ARTIFACTS_FEED: https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
-
 jobs:
-  # windows-latest:
-  #   runs-on: windows-latest
-  #   steps:
-  #     - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
-  #       uses: azure/login@v1
-  #       with:
-  #         client-id: ${{ env.client-id }}
-  #         tenant-id: ${{ env.tenant-id }}
-  #         subscription-id: ${{ env.subscription-id }}
-  #         enable-AzPSSession: true
-
-  #     - name: "Get resource group with PowerShell action"
-  #       uses: azure/powershell@v1
-  #       with:
-  #         azPSVersion: "latest"
-  #         inlineScript: |
-  #           Get-AzResourceGroup
   ubuntu-latest:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - name: "install cred provider"
+        run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
       - name: "Az CLI login"
         uses: azure/login@v1
         with:
-          client-id: ${{ env.client-id }}
-          tenant-id: ${{ env.tenant-id }}
-          subscription-id: ${{ env.subscription-id }}
-      - name: "install cred provider and config auth"
-        run: |
-          sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
-          export ARTIFACTS_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
-          echo "ARTIFACTS_TOKEN=$ARTIFACTS_TOKEN" >> $GITHUB_ENV
-          # https://github.com/microsoft/artifacts-credprovider#environment-variables
-          echo "VSS_NUGET_EXTERNAL_FEED_ENDPOINTS={\"endpointCredentials\":[{\"endpoint\":\"$ARTIFACTS_FEED\",\"username\":\"user\",\"password\":\"$TOKEN\"}]}" >> $GITHUB_ENV
-      - uses: actions/checkout@v3
-      - name: "curl $ARTIFACTS_FEED"
-        run: curl -u "user:$ARTIFACTS_TOKEN" $ARTIFACTS_FEED
+          client-id: "0219b319-b051-4079-b778-933db7596e59" # 'johnterickson--actions-oidc-demo--main--ReadPackages'
+          tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8" # 'johntericksonlive.onmicrosoft.com'
+          subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939" # isual Studio Enterprise Subscription
+      - name: "configure auth"
+        run: echo "VSS_NUGET_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
+      - name: "curl feed root json"
+        run: curl -u "user:$VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
       # this won't work until AzDO supports MSI AAD tokens over basic auth in Jan          
       # - name: "dotnet restore"
       #   run: |
-      #     curl -u "user:$ARTIFACTS_TOKEN" $ARTIFACTS_FEED
       #     # dotnet restore -v diag
 
