@@ -14,7 +14,7 @@ jobs:
       - name: "Az CLI login"
         uses: azure/login@v1
         with:
-          client-id: "0219b319-b051-4079-b778-933db7596e59" # 'johnterickson--actions-oidc-demo--main--ReadPackages'
+          client-id: "34683a38-41fd-4a6c-b9d1-daf72809fc62" # 'oidc-demo'
           tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8" # 'johntericksonlive.onmicrosoft.com'
           subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939" # Visual Studio Enterprise Subscription
       - name: "confirm azure connection"
