@@ -29,8 +29,8 @@ jobs:
       - name: "curl for now"
         run: |
           set -e
-          curl -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
-          curl -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
+          curl -v -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
+          curl -v -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
           unzip microsoft.identitymodel.abstractions.6.22.0.nupkg
       # this won't work until AzDO supports MSI AAD tokens over basic auth in Jan          
       - name: "dotnet restore"
