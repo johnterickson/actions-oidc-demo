@@ -1,5 +1,10 @@
 name: Download from Azure Artifacts without secrets
-on: [push]
+on:
+  schedule:
+    - cron: '0 21 * * *'
+  push:
+    branches:
+      - main
 
 permissions:
   id-token: write
@@ -28,7 +33,7 @@ jobs:
           curl -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
           unzip microsoft.identitymodel.abstractions.6.22.0.nupkg
       # this won't work until AzDO supports MSI AAD tokens over basic auth in Jan          
-      # - name: "dotnet restore"
-      #   run: |
-      #     # dotnet restore -v diag
+      - name: "dotnet restore"
+        run: |
+          dotnet restore -v diag
 
