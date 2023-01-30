@@ -25,7 +25,9 @@ jobs:
       - name: "confirm azure connection"
         run: az account list
       - name: "configure auth"
-        run: echo "VSS_NUGET_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
+        run: |
+          echo "VSS_NUGET_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
+          echo "VSS_NUGET_URI_PREFIXES=https://pkgs.dev.azure.com/johnterickson/" >> $GITHUB_ENV
       - name: "curl with bearer"
         run: |
           set -e
