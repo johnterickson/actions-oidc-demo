@@ -15,7 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: 'show ACTIONS_ID_TOKEN_REQUEST_URL'
-        run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
+        run: |
+          echo $ACTIONS_ID_TOKEN_REQUEST_URL
+          export OIDC_TOKEN=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL")
+          echo $OIDC_TOKEN | jq -c | grep repository | jq
+    
       # login as MSI
       # this will only work from this repo on the main branch because the MSI's federated credential is
       # configured with this subject identifier: `repo:johnterickson/actions-oidc-demo:ref:refs/heads/main`
