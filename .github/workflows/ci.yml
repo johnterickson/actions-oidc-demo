@@ -35,7 +35,7 @@ jobs:
       - name: "extract AAD access token for MSI (valid for about an hour)"
         run: |
           export AZDO_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
-          echo $AZDO_ACCESSTOKEN | tr '.' '\n' | tail -n +2 | tr -d '\n' | base64 --decode | jq
+          (echo $AZDO_ACCESSTOKEN | tr '.' '\n' | tail -n +2 | tr -d '\n' | base64 --decode | jq ) || true
           echo "AZDO_ACCESSTOKEN=$AZDO_ACCESSTOKEN" >> $GITHUB_ENV
         
       - name: "example: curl with bearer auth"
