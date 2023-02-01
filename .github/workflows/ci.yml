@@ -17,7 +17,7 @@ jobs:
       - name: "example JWT"
         run: |
           export JWT=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
-          export $JSON=$($JWT | jq -r .value | tr '.' '\n' | tail -n +2 | tr -d '\n' | base64 --decode | jq)
+          export JSON=$($JWT | jq -r .value | tr '.' '\n' | tail -n +2 | tr -d '\n' | base64 --decode | jq)
           echo $JSON
           
       # login as MSI
