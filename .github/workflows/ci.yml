@@ -18,7 +18,8 @@ jobs:
         run: |
           curl -v -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange"
           export JWT=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
-          echo $JWT | jq -c | grep repository | jq
+          echo $JWT | base64
+          # jq -c | grep repository | jq
 
       # login as MSI
       # this will only work from this repo on the main branch because the MSI's federated credential is
