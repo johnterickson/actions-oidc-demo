@@ -14,35 +14,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: "install cred provider"
-        run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
+
+      # login as MSI
+      # this will only work from this repo on the main branch because the MSI's federated credential is
+      # configured with this subject identifier: `repo:johnterickson/actions-oidc-demo:ref:refs/heads/main`
       - name: "Az CLI login"
         uses: azure/login@v1
         with:
           client-id: "0219b319-b051-4079-b778-933db7596e59" # 'johnterickson--actions-oidc-demo--main--ReadPackages'
           tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8" # 'johntericksonlive.onmicrosoft.com'
           subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939" # Visual Studio Enterprise Subscription
-      - name: "confirm azure connection"
+      - name: "confirm MSI works"
         run: az account list
-      - name: "configure auth"
+        
+      - name: "extract AAD access token for MSI (valid for about an hour)"
+        run: echo "AZDO_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
+        
+      - name: "example: curl with Bearer auth"
         run: |
-          echo "VSS_NUGET_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
+          set -e
+          curl -H "Authorization: Bearer $AZDO_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
+          curl -H "Authorization: Bearer $AZDO_ACCESSTOKEN" -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
+          ls -l microsoft.identitymodel.abstractions.6.22.0.nupkg
+          rm microsoft.identitymodel.abstractions.6.22.0.nupkg
+          
+      - name: "example: curl with Basic auth (similar to PAT)"
+        run: |
+          set -e
+          curl -u "user:$AZDO_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
+          curl -u "user:$AZDO_ACCESSTOKEN" -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
+          ls -l microsoft.identitymodel.abstractions.6.22.0.nupkg
+          rm microsoft.identitymodel.abstractions.6.22.0.nupkg
+      
+      # Azure Artifacts example
+      - name: "install cred provider"
+        run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
+      - name: "configure artifacts cred provider to use AZDO_ACCESSTOKEN"
+        run: |
+          echo "VSS_NUGET_ACCESSTOKEN=$AZDO_ACCESSTOKEN" >> $GITHUB_ENV
           echo "VSS_NUGET_URI_PREFIXES=https://pkgs.dev.azure.com/johnterickson/" >> $GITHUB_ENV
-      - name: "curl with bearer"
-        run: |
-          set -e
-          curl -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
-          curl -H "Authorization: Bearer $VSS_NUGET_ACCESSTOKEN" -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
-          ls -l microsoft.identitymodel.abstractions.6.22.0.nupkg
-          rm microsoft.identitymodel.abstractions.6.22.0.nupkg
-      - name: "curl with basic"
-        run: |
-          set -e
-          curl -u "user:$VSS_NUGET_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
-          curl -u "user:$VSS_NUGET_ACCESSTOKEN" -L -o microsoft.identitymodel.abstractions.6.22.0.nupkg https://pkgs.dev.azure.com/johnterickson/ee787130-34df-4a6f-be9e-772090d4dc7d/_packaging/eff55061-a595-4da6-b22a-1174acf20595/nuget/v3/flat2/microsoft.identitymodel.abstractions/6.22.0/microsoft.identitymodel.abstractions.6.22.0.nupkg
-          ls -l microsoft.identitymodel.abstractions.6.22.0.nupkg
-          rm microsoft.identitymodel.abstractions.6.22.0.nupkg
-      # this won't work until AzDO supports MSI AAD tokens over basic auth in Jan          
       - name: "dotnet restore"
         run: |
           dotnet restore -v diag
