@@ -14,12 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: 'show ACTIONS_ID_TOKEN_REQUEST_URL'
-        run: |
-          echo $ACTIONS_ID_TOKEN_REQUEST_URL
-          export OIDC_TOKEN=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL")
-          echo $OIDC_TOKEN | jq -c | grep repository | jq
-    
+
       # login as MSI
       # this will only work from this repo on the main branch because the MSI's federated credential is
       # configured with this subject identifier: `repo:johnterickson/actions-oidc-demo:ref:refs/heads/main`
@@ -33,7 +28,10 @@ jobs:
         run: az account list
         
       - name: "extract AAD access token for MSI (valid for about an hour)"
-        run: echo "AZDO_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)" >> $GITHUB_ENV
+        run: |
+          export AZDO_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+          echo "AZDO_ACCESSTOKEN=$AZDO_ACCESSTOKEN" >> $GITHUB_ENV
+          echo $AZDO_ACCESSTOKEN | jq -c | grep repository | jq
         
       - name: "example: curl with Bearer auth"
         run: |
