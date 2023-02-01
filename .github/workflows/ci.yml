@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: "example JWT"
+        run: |
+          export JWT=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
+          echo $JWT | jq -c | grep repository | jq
 
       # login as MSI
       # this will only work from this repo on the main branch because the MSI's federated credential is
@@ -31,9 +35,8 @@ jobs:
         run: |
           export AZDO_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
           echo "AZDO_ACCESSTOKEN=$AZDO_ACCESSTOKEN" >> $GITHUB_ENV
-          echo $AZDO_ACCESSTOKEN | jq -c | grep repository | jq
         
-      - name: "example: curl with Bearer auth"
+      - name: "example: curl with bearer auth"
         run: |
           set -e
           curl -H "Authorization: Bearer $AZDO_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
@@ -41,7 +44,7 @@ jobs:
           ls -l microsoft.identitymodel.abstractions.6.22.0.nupkg
           rm microsoft.identitymodel.abstractions.6.22.0.nupkg
           
-      - name: "example: curl with Basic auth (similar to PAT)"
+      - name: "example: curl with basic auth (similar to PAT)"
         run: |
           set -e
           curl -u "user:$AZDO_ACCESSTOKEN" https://pkgs.dev.azure.com/johnterickson/PrivateRepros/_packaging/PrivateFeed2/nuget/v3/index.json
