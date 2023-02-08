@@ -1,0 +1,43 @@
+name: Download from Azure Artifacts without secrets
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+
+jobs:
+  ubuntu-latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+          
+      # login as MSI
+      # this will only work from this repo on the main branch because the MSI's federated credential is
+      # configured with this subject identifier: `repo:johnterickson/actions-oidc-demo:ref:refs/heads/main`
+      - name: "Az CLI login"
+        uses: azure/login@v1
+        with:
+          client-id: "0219b319-b051-4079-b778-933db7596e59" # 'johnterickson--actions-oidc-demo--main--ReadPackages'
+          tenant-id: "6175198f-8863-49c8-ad4a-3ce4364763a8" # 'johntericksonlive.onmicrosoft.com'
+          subscription-id: "dcd6a152-f532-4435-9f36-f5b2c5c14939" # Visual Studio Enterprise Subscription
+        
+      - name: "extract AAD access token for MSI (valid for about an hour)"
+        run: |
+          export AZDO_ACCESSTOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+          echo "AZDO_ACCESSTOKEN=$AZDO_ACCESSTOKEN" >> $GITHUB_ENV
+        
+      # Azure Artifacts example
+      - name: "install cred provider"
+        run: sh -c "$(curl -fsSL https://aka.ms/install-artifacts-credprovider.sh)"
+
+      - name: "configure artifacts cred provider to use AZDO_ACCESSTOKEN"
+        run: |
+          echo "VSS_NUGET_ACCESSTOKEN=$AZDO_ACCESSTOKEN" >> $GITHUB_ENV
+          echo "VSS_NUGET_URI_PREFIXES=https://pkgs.dev.azure.com/johnterickson/" >> $GITHUB_ENV
+
+      - name: "dotnet restore"
+        run: |
+          dotnet restore -v diag
+

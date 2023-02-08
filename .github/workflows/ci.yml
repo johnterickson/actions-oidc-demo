@@ -1,7 +1,5 @@
 name: Download from Azure Artifacts without secrets
 on:
-  schedule:
-    - cron: '0 21 * * *'
   push:
     branches:
       - main
