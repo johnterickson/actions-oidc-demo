@@ -1,4 +1,4 @@
-name: Download from Azure Artifacts without secrets
+name: Download from Azure Artifacts without secrets (full logging)
 on:
   push:
     branches:
